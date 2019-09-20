@@ -39,6 +39,24 @@ snmp_session_open (const char *domain, const char *peer, const char *community)
 	return snmp_open (&session);
 }
 
+static FILE *open_conf (const char *path)
+{
+	char *user_conf;
+	FILE *f;
+
+	if (path != NULL)
+		return fopen (path, "r");
+
+	if (getuid () == 0)
+		return fopen ("/etc/snmp-monitor.conf", "r");
+
+	user_conf = g_build_filename (g_getenv ("HOME"), ".config",
+				      "snmp-monitor.conf", NULL);
+	f = fopen (user_conf, "r");
+	g_free (user_conf);
+	return f;
+}
+
 struct record {
 	struct record *next;
 	char *name;
@@ -168,16 +186,22 @@ show_vars (const struct record *o, netsnmp_variable_list *v)
 
 int main (int argc, char *argv[])
 {
-	const char *peer, *community = "public";
+	const char *config = NULL, *peer, *community = "public";
 	netsnmp_session *ss;
+	FILE *conf;
 	struct record *list;
 	netsnmp_variable_list *vars;
 
-	if (argc < 2 || argc > 3) {
-		fprintf (stderr, "usage:\n"
-				 "\tsnmp-monitor: <peer> [community]\n");
-		return 1;
+	if (argc >= 2 && strcmp (argv[1], "-c") == 0) {
+		if (argc < 3)
+			goto usage;
+
+		config = argv[2];
+		argc -= 2, argv += 2;
 	}
+
+	if (argc < 2 || argc > 3)
+		goto usage;
 
 	peer = argv[1];
 
@@ -188,6 +212,9 @@ int main (int argc, char *argv[])
 
 	if ((ss = snmp_session_open ("snmp-mon", peer, community)) == NULL)
 		err (1, "E: snmp session");
+
+	if ((conf = open_conf (config)) == NULL)
+		errx (1, "E: cannot open config file");
 
 	if ((list = get_records (stdin)) == NULL)
 		errx (1, "I: nothing to do");
@@ -203,4 +230,8 @@ int main (int argc, char *argv[])
 	snmp_free_varbind (vars);
 	snmp_close (ss);
 	return 0;
+usage:
+	fprintf (stderr, "usage:\n"
+			 "\tsnmp-monitor: [-c <config>] <peer> [community]\n");
+	return 1;
 }
