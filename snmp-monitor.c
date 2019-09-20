@@ -166,6 +166,16 @@ no_var:
 static void
 show_vars (const struct record *o, netsnmp_variable_list *v)
 {
+	char *root;
+
+	if (getuid () == 0)
+		root = "/var/run/snmp-monitor";
+	else
+		root = g_build_filename (g_getenv ("HOME"), ".local",
+					 "share", "snmp-monitor", NULL);
+
+	(void) g_mkdir_with_parents (root, 0777);
+
 	for (; o != NULL; o = o->next) {
 		if (snmp_oid_compare (o->OID, o->OID_len,
 				      v->name, v->name_length) != 0)
@@ -176,12 +186,15 @@ show_vars (const struct record *o, netsnmp_variable_list *v)
 		case ASN_COUNTER:
 		case ASN_GAUGE:
 			printf ("%s: %lu\n", o->name, *v->val.integer);
-			rrdb_update ("db", o->name, o->gauge, *v->val.integer);
+			rrdb_update (root, o->name, o->gauge, *v->val.integer);
 			break;
 		}
 
 		v = v->next_variable;
 	}
+
+	if (getuid () != 0)
+		g_free (root);
 }
 
 int main (int argc, char *argv[])
