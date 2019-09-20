@@ -199,7 +199,7 @@ show_vars (const struct record *o, netsnmp_variable_list *v)
 
 int main (int argc, char *argv[])
 {
-	const char *config = NULL, *peer, *community = "public";
+	const char *config = NULL, *peer = "localhost", *community = "public";
 	netsnmp_session *ss;
 	FILE *conf;
 	struct record *list;
@@ -213,10 +213,11 @@ int main (int argc, char *argv[])
 		argc -= 2, argv += 2;
 	}
 
-	if (argc < 2 || argc > 3)
+	if (argc > 3)
 		goto usage;
 
-	peer = argv[1];
+	if (argc >= 2)
+		peer = argv[1];
 
 	if (argc > 2)
 		community = argv[2];
@@ -245,6 +246,7 @@ int main (int argc, char *argv[])
 	return 0;
 usage:
 	fprintf (stderr, "usage:\n"
-			 "\tsnmp-monitor: [-c <config>] <peer> [community]\n");
+			 "\tsnmp-monitor: [-c <config>]"
+					" [<peer> [community]]\n");
 	return 1;
 }
