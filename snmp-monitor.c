@@ -169,7 +169,7 @@ show_vars (const struct record *o, netsnmp_variable_list *v)
 	char *root;
 
 	if (getuid () == 0)
-		root = "/var/run/snmp-monitor";
+		root = "/var/lib/snmp-monitor";
 	else
 		root = g_build_filename (g_getenv ("HOME"), ".local",
 					 "share", "snmp-monitor", NULL);
