@@ -1,11 +1,14 @@
-TARGETS = snmp-get rrd-test snmp-monitor
+TARGETS = snmp-monitor
+TESTS = snmp-get rrd-test
 
 # CFLAGS += -O0 -g
 
 all: $(TARGETS)
 
+tests: $(TESTS)
+
 clean:
-	rm -f *.o $(TARGETS)
+	rm -f *.o $(TARGETS) $(TESTS)
 
 PREFIX ?= /usr/local
 
