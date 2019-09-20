@@ -96,7 +96,7 @@ static int db_update (const char *path, int gauge, long value)
 
 static char *db_path (const char *root, const char *name)
 {
-	static const char *fmt = "%s/%s";
+	static const char *fmt = "%s/%s.rrd";
 	int len;
 	char *path;
 
