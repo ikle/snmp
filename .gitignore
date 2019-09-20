@@ -1,0 +1,9 @@
+*.swp
+*.o
+*.a
+*.so
+*.so.*
+*.rrd
+snmp-get
+rrd-test
+snmp-monitor
