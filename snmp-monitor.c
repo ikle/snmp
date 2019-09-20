@@ -168,13 +168,25 @@ show_vars (const struct record *o, netsnmp_variable_list *v)
 
 int main (int argc, char *argv[])
 {
+	const char *peer, *community = "public";
 	netsnmp_session *ss;
 	struct record *list;
 	netsnmp_variable_list *vars;
 
+	if (argc < 2 || argc > 3) {
+		fprintf (stderr, "usage:\n"
+				 "\tsnmp-monitor: <peer> [community]\n");
+		return 1;
+	}
+
+	peer = argv[1];
+
+	if (argc > 2)
+		community = argv[2];
+
 //	snmp_disable_log ();
 
-	if ((ss = snmp_session_open ("snmp-mon", "10.0.26.2", "public")) == NULL)
+	if ((ss = snmp_session_open ("snmp-mon", peer, community)) == NULL)
 		err (1, "E: snmp session");
 
 	if ((list = get_records (stdin)) == NULL)
