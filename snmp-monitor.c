@@ -230,7 +230,7 @@ int main (int argc, char *argv[])
 	if ((conf = open_conf (config)) == NULL)
 		errx (1, "E: cannot open config file");
 
-	if ((list = get_records (stdin)) == NULL)
+	if ((list = get_records (conf)) == NULL)
 		errx (1, "I: nothing to do");
 
 	if ((vars = snmp_get_template (list)) == NULL)
