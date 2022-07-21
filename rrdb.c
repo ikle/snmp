@@ -1,7 +1,7 @@
 /*
- * Round-Robin Dababase Helpers
+ * Round-Robin Database Helpers
  *
- * Copyright (c) 2019 Alexei A. Smekalkine <ikle@ikle.ru>
+ * Copyright (c) 2019-2022 Alexei A. Smekalkine <ikle@ikle.ru>
  *
  * SPDX-License-Identifier: BSD-2-Clause
  */
